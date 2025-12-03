@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
 <head>
@@ -6,15 +5,44 @@
 <!-- 设置页面背景为深蓝色 -->
 <style>
 body {
-    background-color: #2eb49f; /* 深蓝色 */
+    /* 移除原来的背景色设置 */
     margin: 0;
     padding: 0;
+    /* 添加背景图片相关样式 */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    transition: background-image 2s ease-in-out;
+}
+
+/* 添加背景幻灯片容器样式 */
+.bg-slideshow {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -1; /* 确保背景在所有内容之后 */
+}
+
+.bg-slideshow img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+}
+
+.bg-slideshow img.active {
+    opacity: 1;
 }
 </style>
 
 <script language="JavaScript">
 //定义参数 start
-var dCol="#000000",fCol="#000000",sCol="red",mCol="green",hCol="blue";
+var dCol="#FFFFFF",fCol="#FFFFFF",sCol="red",mCol="green",hCol="yellow";
 var ClockHeight=50,ClockWidth=50,ClockFromMouseY=80,ClockFromMouseX=70;
 var d=new Array("星期天  智云达祝你圣诞快乐","星期一  智云达祝你圣诞快乐","星期二  智云达祝你圣诞快乐","星期三  智云达祝你圣诞快乐","星期四  智云达祝你圣诞快乐","星期五  智云达祝你圣诞快乐","星期六  智云达祝你圣诞快乐");
 var m=new Array("一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月");
@@ -61,8 +89,23 @@ for (i=0; i < D.length; i++){
  DY[i]=0;
  DX[i]=0
 }
+
+// 背景图片轮播相关变量
+var bgImages = [
+  "tp/img0.jpg", "tp/img0_1920x1200.jpg", "tp/img100.jpg", "tp/img101.jpg", "tp/img102.jpg",
+  "tp/img103.jpg", "tp/img104.jpg", "tp/img105.jpg", "tp/img14.jpg", "tp/img19.jpg",
+  "tp/img19_1920x1200.jpg", "tp/img20.jpg", "tp/img21.jpg", "tp/img22.jpg", "tp/img23.jpg",
+  "tp/img24.jpg", "tp/img25.jpg", "tp/img26.jpg", "tp/img27.jpg", "tp/img28.jpg",
+  "tp/img29.jpg", "tp/img30.jpg", "tp/img31.jpg", "tp/img32.jpg", "tp/img33.jpg",
+  "tp/img34.jpg", "tp/img35.jpg"
+];
+var currentBgIndex = 0;
+
 //定义参数 end
 function Start(){
+// 初始化背景图片轮播
+initBackgroundSlideshow();
+
 var tempstr="";
 for (i=0; i < D.length; i++){
  tempstr+="<div id=\"ieDate"+i+"\" style=\"position:absolute;top:0px;left:0;height:"+a+";width:"+a+";text-align:center\">"+props2+D[i]+"</B></font></div>";
@@ -91,6 +134,37 @@ document.getElementById("Os").childNodes[0].innerHTML=tempstr;
 tempstr="";
 Delay();
 }
+
+// 初始化背景图片轮播函数
+function initBackgroundSlideshow() {
+  // 创建背景容器
+  var bgContainer = document.createElement('div');
+  bgContainer.className = 'bg-slideshow';
+  document.body.appendChild(bgContainer);
+  
+  // 为每张图片创建img元素
+  for (var i = 0; i < bgImages.length; i++) {
+    var img = document.createElement('img');
+    img.src = bgImages[i];
+    if (i === 0) img.className = 'active'; // 第一张图片默认显示
+    bgContainer.appendChild(img);
+  }
+  
+  // 启动定时器，每20秒切换一次背景
+  setInterval(changeBackground, 20000);
+}
+
+// 切换背景图片函数
+function changeBackground() {
+  var images = document.querySelectorAll('.bg-slideshow img');
+  // 移除当前活动图片的active类
+  images[currentBgIndex].classList.remove('active');
+  // 计算下一张图片的索引
+  currentBgIndex = (currentBgIndex + 1) % bgImages.length;
+  // 为下一张图片添加active类
+  images[currentBgIndex].classList.add('active');
+}
+
 function Mouse(eventTag){
  var event = eventTag||window.event;
  if (eventTag) {
